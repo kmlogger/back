@@ -17,7 +17,7 @@ public class AppFile : BaseValueObject
             new Contract()
                 .Requires()
                 .IsNotNull(file, Key, "File cannot be null")
-                .IsLowerThan(file.Length, 10_000_000, Key, "File size must be less than 10MB")  // Example size validation
+                .IsLowerThan(file.Length, 10_000_000, Key, "File size must be less than 10MB")  
                 .IsNotNullOrEmpty(fileName, Key, "File name cannot be null or empty")
         );
 

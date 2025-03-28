@@ -3,7 +3,7 @@ using Domain.Interfaces.Repositories.Hot;
 using Domain.Records;
 using MediatR;
 
-namespace Application.UseCases.Log.Hot.ReadAllToday;
+namespace Application.UseCases.Log.Hot.Read.ReadAllToday;
 
 public class Handler : IRequestHandler<Request, BaseResponse>
 {

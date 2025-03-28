@@ -10,17 +10,20 @@ using ReadById =  Application.UseCases.Log.Hot.Read.ReadById.Request;
 using ReadByAppCold =  Application.UseCases.Log.Read.Cold.ReadByApp.Request;
 using ReadByIdCold =  Application.UseCases.Log.Cold.Read.ReadById.Request;
 using ReadByInterval =  Application.UseCases.Log.Cold.Read.ReadByInterval.Request;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace Presentation.Controllers;
 
 [ApiController]
 [Route("logs")]
+[Authorize]
 public class LogController(IMediator mediator) : ControllerBase
 {
     #region  HOT
 
-    [HttpPost("Create")]
+    [HttpPost("create")]
+    [AllowAnonymous]
     public async Task<IActionResult> CreateLog([FromBody] CreateRequest request, CancellationToken cancellationToken)
     {
         if(!ModelState.IsValid) return BadRequest();

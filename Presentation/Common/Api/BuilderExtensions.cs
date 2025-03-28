@@ -13,6 +13,9 @@ using Microsoft.IdentityModel.Tokens;
 using Application.DI;
 using Infrastructure.Data.Hot;
 using Infrastructure.Data.Cold;
+using Presentation.BackGround;
+using Application.BackGround;
+using Domain.Interfaces.BackGroundServices;
 
 namespace Presentation.Common.Api;
 
@@ -27,7 +30,7 @@ public  static class BuilderExtensions
         Configuration.BackendUrl = Environment.GetEnvironmentVariable("BACKEND_URL") ?? string.Empty;
         Configuration.VersionApi = Environment.GetEnvironmentVariable("VERSION_API") ?? string.Empty;
         Configuration.ApiKey = Environment.GetEnvironmentVariable("API_KEY") ?? string.Empty;
-        Configuration.ConnectionStringClickHouse = Environment.GetEnvironmentVariable("CLICKHOUSE_CONNECTION_STRING") ?? string.Empty;
+        Configuration.ConnectionStringClickHouse = Environment.GetEnvironmentVariable("COLD_CONNECTION_STRING") ?? string.Empty;
         Configuration.SqliteConnectionString = "Data Source=" + Path.GetFullPath(Path.Combine(projectRoot, "Infrastructure", "dbkmlogger.db"));
         Configuration.ApiKeyAttribute = "X-API-KEY";
         Configuration.FrontendUrl = Environment.GetEnvironmentVariable("FRONTEND_URL") ?? "http://localhost:4200";
@@ -134,5 +137,8 @@ public  static class BuilderExtensions
         
         builder.Services.AppServices();
         builder.Services.ConfigureInfraServices();
+        builder.Services.AddScoped<ILogTransferService, LogTransferService>();
+        builder.Services.AddScoped<LogTransferJob>(); // agora é seguro, pois será resolvido dentro de um escopo
+        builder.Services.AddHostedService<LogTransferWorker>();
     }
 }

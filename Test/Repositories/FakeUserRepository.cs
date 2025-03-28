@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Concurrent;
 using System.Linq.Expressions;
 using Domain.Entities;
@@ -6,146 +5,93 @@ using Domain.Interfaces.Repositories;
 
 namespace Test.Repositories;
 
-public class FakeUserRepository : IUserRepository
+public class FakeBaseRepository<T> : IBaseRepository<T> where T : Entity
 {
-    private readonly ConcurrentDictionary<Guid, User> _users = new();
-
-    public Task CreateAsync(User entity, CancellationToken cancellationToken)
+    protected readonly ConcurrentDictionary<Guid, T> _storage = new();
+    public virtual Task CreateAsync(T entity, CancellationToken cancellationToken)
     {
-        _users[entity.Id] = entity;
+        _storage[entity.Id] = entity;
         return Task.CompletedTask;
     }
 
-    public Task<User> CreateReturnEntity(User entity, CancellationToken cancellationToken)
+    public virtual Task<T> CreateReturnEntity(T entity, CancellationToken cancellationToken)
     {
-        _users[entity.Id] = entity;
+        _storage[entity.Id] = entity;
         return Task.FromResult(entity);
     }
 
-    public void Update(User entity)
+    public virtual void Update(T entity)
     {
-        if (_users.ContainsKey(entity.Id))
+        if (_storage.ContainsKey(entity.Id))
         {
-            _users[entity.Id] = entity;
+            _storage[entity.Id] = entity;
         }
     }
 
-    public Task DeleteAsync(User entity, CancellationToken cancellationToken = default)
+    public virtual Task DeleteAsync(T entity, CancellationToken cancellationToken = default)
     {
-        _users.TryRemove(entity.Id, out _);
+        _storage.TryRemove(entity.Id, out _);
         return Task.CompletedTask;
     }
 
-    public Task<List<User>> GetAll(CancellationToken cancellationToken)
-        => Task.FromResult(_users.Values.ToList());
-
-    public Task<User?> GetById(Guid? id, CancellationToken cancellationToken)
+    public virtual Task<List<T>> GetAll(CancellationToken cancellationToken, int skip = 0, int take = 10)
     {
-        if (id == null || !_users.ContainsKey(id.Value))
-            return Task.FromResult<User?>(null);
-
-        return Task.FromResult<User?>(_users[id.Value]);
+        var result = _storage.Values.Skip(skip).Take(take).ToList();
+        return Task.FromResult(result);
     }
 
-    public Task<User?> GetWithParametersAsync(
-        Expression<Func<User, bool>>? filter = null,
+    public virtual Task<T?> GetWithParametersAsync(
+        Expression<Func<T, bool>>? filter = null,
         CancellationToken cancellationToken = default,
-        params Expression<Func<User, object>>[] includes)
+        params Expression<Func<T, object>>[] includes)
     {
-        var query = _users.Values.AsQueryable();
+        var query = _storage.Values.AsQueryable();
         return Task.FromResult(filter != null ? query.FirstOrDefault(filter) : null);
     }
 
-    public Task<List<User>> GetAllWithParametersAsync(
-        Expression<Func<User, bool>>? filter = null,
+    public virtual Task<List<T>> GetAllWithParametersAsync(
+        Expression<Func<T, bool>>? filter = null,
         CancellationToken cancellationToken = default,
-        params Expression<Func<User, object>>[] includes)
+        int skip = 0,
+        int take = 10,
+        params Expression<Func<T, object>>[] includes)
     {
-        var query = _users.Values.AsQueryable();
-        return Task.FromResult(filter != null ? query.Where(filter).ToList() : query.ToList());
-    }
-
-    public Task<List<TResult>> GetAllProjectedAsync<TResult>(
-        Expression<Func<User, bool>>? filter = null,
-        Expression<Func<User, TResult>> selector = null,
-        CancellationToken cancellationToken = default,
-        params Expression<Func<User, object>>[] includes)
-    {
-        var query = _users.Values.AsQueryable();
+        var query = _storage.Values.AsQueryable();
         if (filter != null)
         {
             query = query.Where(filter);
         }
 
-        return Task.FromResult(selector != null ? query.Select(selector).ToList() : new List<TResult>());
+        return Task.FromResult(query.Skip(skip).Take(take).ToList());
     }
 
-    public Task<TResult> GetProjectedAsync<TResult>(
-        Expression<Func<User, bool>>? filter = null,
-        Expression<Func<User, TResult>> selector = null,
+    public virtual Task<List<TResult>> GetAllProjectedAsync<TResult>(
+        Expression<Func<T, bool>>? filter = null,
+        Expression<Func<T, TResult>> selector = null!,
         CancellationToken cancellationToken = default,
-        params Expression<Func<User, object>>[] includes)
+        int skip = 0,
+        int take = 10,
+        params Expression<Func<T, object>>[] includes)
     {
-        var query = _users.Values.AsQueryable();
+        var query = _storage.Values.AsQueryable();
+
         if (filter != null)
-        {
             query = query.Where(filter);
-        }
 
-        return Task.FromResult(selector != null ? query.Select(selector).FirstOrDefault() : default);
+        return Task.FromResult(selector != null ? query.Select(selector).Skip(skip).Take(take).ToList() : new List<TResult>());
     }
 
-    public Task<List<User>> GetAllPages(
-        int page,
-        int pageSize,
-        Expression<Func<User, bool>>? filter = null,
+    public virtual Task<TResult> GetProjectedAsync<TResult>(
+        Expression<Func<T, bool>>? filter = null,
+        Expression<Func<T, TResult>> selector = null!,
         CancellationToken cancellationToken = default,
-        params Expression<Func<User, object>>[] includes)
+        params Expression<Func<T, object>>[] includes)
     {
-        IEnumerable<User> query = _users.Values.AsQueryable();
+        var query = _storage.Values.AsQueryable();
 
         if (filter != null)
-        {
-            query = query.Where(filter.Compile());
-        }
+            query = query.Where(filter);
 
-        query = query
-            .OrderByDescending(u => u.CreatedDate) 
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize);
-
-        return Task.FromResult(query.ToList());
-    }
-
-    public Task<bool> Authenticate(User user, CancellationToken cancellationToken)
-    {
-        var userFromDb = _users.Values.FirstOrDefault(u => u.Email.Address == user.Email.Address && u.Active);
-
-        if (userFromDb == null)
-            return Task.FromResult(false);
-
-        var isAuthenticated = userFromDb.Password.VerifyPassword(user.Password.Content, userFromDb.Password.Salt);
-        return Task.FromResult(isAuthenticated);
-    }
-
-    public Task<User?> ActivateUserAsync(string email, long token, CancellationToken cancellationToken)
-    {
-        var user = _users.Values.FirstOrDefault(x =>
-            !x.Active && x.Email.Address == email && x.TokenActivate == token);
-
-        if (user != null)
-        {
-            user.AssignActivate(true);
-            Update(user);
-            return Task.FromResult(user);
-        }
-
-        return Task.FromResult(user);
-    }
-
-    public Task<User?> GetByEmail(string email, CancellationToken cancellationToken)
-    {
-        var exists = _users.Values.FirstOrDefault(x => x.Email.Address == email);
-        return Task.FromResult<User?>(exists);
+        return Task.FromResult(selector != null ? query.Select(selector).FirstOrDefault() : default!);
     }
 }

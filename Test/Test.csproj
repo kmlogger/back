@@ -22,6 +22,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="Test"/>
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Green/Infrastructure/Services/" />
   </ItemGroup>
 

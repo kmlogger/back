@@ -5,17 +5,17 @@ using Microsoft.EntityFrameworkCore.Design;
 
 namespace Infrastructure.Data.Hot;
 
-public  class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<HotDbContext>
+public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<HotDbContext>
 {
     public HotDbContext CreateDbContext(string[] args)
     {
         try
         {
-            if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("HOT_CONNECTION_STRING")))
+            if (string.IsNullOrEmpty("Data Source=" + Path.GetFullPath("../../dbkmlogger.db")))
                 throw new Exception("A connection string must be provided.");
                 
             var builder = new DbContextOptionsBuilder<HotDbContext>();
-            builder.UseSqlite(Environment.GetEnvironmentVariable("HOT_CONNECTION_STRING"));
+            builder.UseSqlite("Data Source=" + Path.GetFullPath("../../dbkmlogger.db"));
             var context = new HotDbContext(builder.Options);
             return context;
         }

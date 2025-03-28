@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Design;
 
 namespace Infrastructure.Data.Cold;
 
-public  class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<ColdDbContext>
+public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<ColdDbContext>
 {
     public ColdDbContext CreateDbContext(string[] args)
     {
@@ -15,7 +15,7 @@ public  class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<ColdDbCon
                 throw new Exception("A connection string must be provided.");
                 
             var builder = new DbContextOptionsBuilder<ColdDbContext>();
-            builder.Us(Environment.GetEnvironmentVariable("COLD_CONNECTION_STRING"));
+            builder.UseNpgsql(Environment.GetEnvironmentVariable("COLD_CONNECTION_STRING"));
             var context = new ColdDbContext(builder.Options);
             return context;
         }

@@ -11,6 +11,7 @@ using RegisterMapper = Application.UseCases.User.Register.Mapper;
 using RegisterRequest = Application.UseCases.User.Register.Request;
 using RegisterHandler = Application.UseCases.User.Register.Handler;
 using FluentAssertions;
+using Domain.Interfaces.Repositories.Cold;
 
 namespace Test.Red.Application.UseCases;
 

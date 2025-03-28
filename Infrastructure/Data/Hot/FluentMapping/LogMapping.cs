@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 using Environment = Domain.Enums.Environment;
 
-namespace Infrastructure.Data.Cold.FluentMapping
+namespace Infrastructure.Data.Hot.FluentMapping
 {
     public class LogAppMapping : IEntityTypeConfiguration<LogApp>
     {
@@ -57,7 +57,7 @@ namespace Infrastructure.Data.Cold.FluentMapping
             // Mapeamento do Value Object Description para StackTrace
             builder.OwnsOne(l => l.StackTrace, st =>
             {
-                st.Property(s => s.Text)
+                st.Property(s => s.Body)
                     .HasColumnName("StackTrace")
                     .HasColumnType("String");
             });

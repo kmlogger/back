@@ -4,7 +4,6 @@ using Domain.Entities;
 using Domain.Interfaces.Repositories;
 using Domain.Interfaces.Repositories.Hot;
 using Domain.Records;
-using Grpc.Core;
 using MediatR;
 
 using ILogRepository = Domain.Interfaces.Repositories.Hot.ILogRepository;

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Infrastructure.Data.Cold.Converters;
 
-public  class EnumConverter : ValueConverter<Enum, string>
+public class EnumConverter : ValueConverter<Enum, string>
 {
     public EnumConverter() 
         : base(

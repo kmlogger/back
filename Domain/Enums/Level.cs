@@ -1,6 +1,6 @@
 namespace Domain.Enums;
 
-internal enum Level
+public enum Level
 {
     Debug = 1,
     Information = 2,

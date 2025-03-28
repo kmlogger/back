@@ -1,10 +1,6 @@
-using Domain.Entities;
-using Domain.Interfaces;
-using Domain.Interfaces.Repositories;
 using Domain.Interfaces.Repositories.Cold;
 using Domain.Records;
 using Domain.ValueObjects;
-using Grpc.Core;
 using MediatR;
 
 namespace Application.UseCases.App.Create;

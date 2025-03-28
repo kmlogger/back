@@ -9,7 +9,7 @@ using MediatR;
 
 namespace Application.UseCases.User.ResendCode;
 
-public  class Handler : IRequestHandler<Request, BaseResponse>
+public class Handler : IRequestHandler<Request, BaseResponse>
 {
     private readonly IUserRepository _userRepository;
     private readonly IEmailService _emailService;

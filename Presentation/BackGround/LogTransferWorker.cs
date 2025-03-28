@@ -1,16 +1,18 @@
-using System;
 using Application.BackGround;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace Presentation.BackGround;
 
 public class LogTransferWorker : BackgroundService
 {
-    private readonly LogTransferJob  _job;
+    private readonly IServiceScopeFactory _scopeFactory;
     private readonly ILogger<LogTransferWorker> _logger;
 
-    public LogTransferWorker(LogTransferJob job, ILogger<LogTransferWorker> logger)
+    public LogTransferWorker(IServiceScopeFactory scopeFactory, ILogger<LogTransferWorker> logger)
     {
-        _job = job;
+        _scopeFactory = scopeFactory;
         _logger = logger;
     }
 
@@ -19,16 +21,18 @@ public class LogTransferWorker : BackgroundService
         while (!stoppingToken.IsCancellationRequested)
         {
             _logger.LogInformation("Iniciando job de transferência de logs...");
+
             try
             {
-                await _job.ExecuteAsync(stoppingToken);
+                using var scope = _scopeFactory.CreateScope();
+                var job = scope.ServiceProvider.GetRequiredService<LogTransferJob>();
+                await job.ExecuteAsync(stoppingToken);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Erro durante execução do job.");
             }
 
-            // Executar 1x por dia
             await Task.Delay(TimeSpan.FromDays(1), stoppingToken);
         }
     }

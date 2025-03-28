@@ -2,6 +2,8 @@ using System;
 using System.Reflection;
 using Domain.Entities;
 using Flunt.Notifications;
+using Infrastructure.Data.Cold.FluentMapping;
+using Infrastructure.Data.FluentMapping;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Data.Cold;
@@ -19,6 +21,10 @@ public class ColdDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.Ignore<Notification>();
-        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(LogAppColdMapping).Assembly);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(UserMapping).Assembly);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(RoleMapping).Assembly);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppMapping).Assembly);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(CategoryMapping).Assembly);
     }
 }

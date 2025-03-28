@@ -6,6 +6,7 @@ using  ActivateRequest = Application.UseCases.User.Activate.Request;
 using  ActivateHandler = Application.UseCases.User.Activate.Handler;
 using Domain.Entities;
 using Domain.ValueObjects;
+using Domain.Interfaces.Repositories.Cold;
 
 namespace Test.Red.Application.UseCases;
 

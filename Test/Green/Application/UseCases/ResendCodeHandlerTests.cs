@@ -5,6 +5,7 @@ using Application.UseCases.User.ResendCode;
 using Bogus;
 using Domain.Entities;
 using Domain.Interfaces.Repositories;
+using Domain.Interfaces.Repositories.Cold;
 using Domain.Interfaces.Services;
 using Domain.ValueObjects;
 using FluentAssertions;
@@ -46,7 +47,7 @@ namespace Test.Green.Application.UseCases
 
             var fakeUser = new User(fakeFullName, fakeEmail, fakeAddress, true, fakePassword);
 
-            var request = new Request(fakeUser.Email.Address!, fakeUser.TokenActivate);
+            var request = new Request(fakeUser.Email.Address!, fakeUser.TokenActivate ?? 0);
 
             _userRepositoryMock
                 .Setup(repo => repo.GetByEmail(request.email, It.IsAny<CancellationToken>()))

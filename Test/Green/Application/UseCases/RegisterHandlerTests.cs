@@ -11,6 +11,7 @@ using RegisterHandler = Application.UseCases.User.Register.Handler;
 using Domain.Entities;
 using Domain.ValueObjects;
 using FluentAssertions;
+using Domain.Interfaces.Repositories.Cold;
 
 namespace Test.Green.Application.UseCases;
 
