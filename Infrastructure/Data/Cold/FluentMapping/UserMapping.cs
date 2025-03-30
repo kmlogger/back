@@ -12,27 +12,27 @@ namespace Infrastructure.Data.Cold.FluentMapping
             builder.ToTable("Users");
             builder.HasKey(u => u.Id);
 
-            // Propriedades
             builder.Property(c => c.Id)
                 .HasColumnName("Id")
-                .HasColumnType("UUID")
+                .HasColumnType("uuid")
                 .ValueGeneratedOnAdd()
                 .IsRequired();
 
             builder.Property(c => c.CreatedDate)
                 .HasColumnName("CreatedDate")
-                .HasColumnType("DateTime")
-                .HasDefaultValueSql("now()");
+                .HasColumnType("timestamp")
+                .HasDefaultValueSql("now()")
+                .IsRequired();
 
             builder.Property(c => c.UpdatedDate)
                 .HasColumnName("UpdatedDate")
-                .HasColumnType("DateTime")
-                .IsRequired()
-                .HasDefaultValueSql("now()");
+                .HasColumnType("timestamp")
+                .HasDefaultValueSql("now()")
+                .IsRequired();
 
             builder.Property(c => c.DeletedDate)
                 .HasColumnName("DeletedDate")
-                .HasColumnType("DateTime")
+                .HasColumnType("timestamp")
                 .IsRequired(false);
 
             builder.OwnsOne(u => u.FullName, fullName =>
@@ -40,12 +40,14 @@ namespace Infrastructure.Data.Cold.FluentMapping
                 fullName.Property(f => f.FirstName)
                     .HasMaxLength(100)
                     .HasColumnName("FirstName")
-                    .HasColumnType("String");
+                    .HasColumnType("varchar")
+                    .IsRequired();
 
                 fullName.Property(f => f.LastName)
                     .HasMaxLength(100)
                     .HasColumnName("LastName")
-                    .HasColumnType("String");
+                    .HasColumnType("varchar")
+                    .IsRequired();
             });
 
             builder.OwnsOne(u => u.Email, email =>
@@ -53,7 +55,8 @@ namespace Infrastructure.Data.Cold.FluentMapping
                 email.Property(e => e.Address)
                     .HasColumnName("Email")
                     .HasMaxLength(50)
-                    .HasColumnType("String");
+                    .HasColumnType("varchar")
+                    .IsRequired();
             });
 
             builder.OwnsOne(u => u.Address, address =>
@@ -61,46 +64,47 @@ namespace Infrastructure.Data.Cold.FluentMapping
                 address.Property(a => a.Road)
                     .HasColumnName("Road")
                     .HasMaxLength(100)
-                    .IsRequired(false)
-                    .HasColumnType("String");
+                    .HasColumnType("varchar")
+                    .IsRequired(false);
 
-                    address.Property(a => a.Number)
-                        .HasColumnName("Number")
-                        .HasColumnType("Int64")
-                        .IsRequired(false); 
+                address.Property(a => a.Number)
+                    .HasColumnName("Number")
+                    .HasColumnType("bigint")
+                    .IsRequired(false);
 
                 address.Property(a => a.NeighBordHood)
                     .HasColumnName("NeighborHood")
-                    .IsRequired(false)
-                    .HasColumnType("String");
+                    .HasColumnType("varchar")
+                    .IsRequired(false);
 
                 address.Property(a => a.Complement)
                     .HasColumnName("Complement")
                     .HasMaxLength(100)
-                    .IsRequired(false)
-                    .HasColumnType("String");
+                    .HasColumnType("varchar")
+                    .IsRequired(false);
             });
 
             builder.Property(u => u.TokenActivate)
                 .HasColumnName("TokenActivate")
-                .IsRequired(false)
-                .HasColumnType("String");
+                .HasColumnType("varchar")
+                .IsRequired(false);
 
             builder.Property(u => u.Active)
                 .HasColumnName("Active")
-                .HasColumnType("UInt8");
+                .HasColumnType("boolean")
+                .IsRequired();
 
             builder.OwnsOne(u => u.Password, password =>
             {
                 password.Property(p => p.Hash)
                     .HasColumnName("Hash")
-                    .IsRequired(false)
-                    .HasColumnType("String");
+                    .HasColumnType("varchar")
+                    .IsRequired(false);
 
                 password.Property(p => p.Salt)
                     .HasColumnName("Salt")
-                    .IsRequired(false)
-                    .HasColumnType("String");
+                    .HasColumnType("varchar")
+                    .IsRequired(false);
 
                 password.Ignore(p => p.Content);
             });

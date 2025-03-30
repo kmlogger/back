@@ -20,7 +20,7 @@ public class Handler : IRequestHandler<Request, BaseResponse>
     public async Task<BaseResponse> Handle(Request request, CancellationToken cancellationToken)
     {
         var user = await _userRepository.ActivateUserAsync(request.email, request.token, cancellationToken);
-        if (!(user is null) || request.token.Equals(0)) return new BaseResponse(400, "User or token invalid");
+        if ((user is null) || request.token.Equals(0)) return new BaseResponse(400, "User or token invalid");
         await _dbCommit.Commit(cancellationToken);
         return new BaseResponse(200, "User activated!");
     }

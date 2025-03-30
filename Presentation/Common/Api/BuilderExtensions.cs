@@ -30,7 +30,7 @@ public  static class BuilderExtensions
         Configuration.BackendUrl = Environment.GetEnvironmentVariable("BACKEND_URL") ?? string.Empty;
         Configuration.VersionApi = Environment.GetEnvironmentVariable("VERSION_API") ?? string.Empty;
         Configuration.ApiKey = Environment.GetEnvironmentVariable("API_KEY") ?? string.Empty;
-        Configuration.ConnectionStringClickHouse = Environment.GetEnvironmentVariable("COLD_CONNECTION_STRING") ?? string.Empty;
+        Configuration.ConnectionStringPostgresql = Environment.GetEnvironmentVariable("COLD_CONNECTION_STRING") ?? string.Empty;
         Configuration.SqliteConnectionString = "Data Source=" + Path.GetFullPath(Path.Combine(projectRoot, "Infrastructure", "dbkmlogger.db"));
         Configuration.ApiKeyAttribute = "X-API-KEY";
         Configuration.FrontendUrl = Environment.GetEnvironmentVariable("FRONTEND_URL") ?? "http://localhost:4200";
@@ -66,12 +66,28 @@ public  static class BuilderExtensions
 
     public static void AddSecurity(this WebApplicationBuilder builder)
     {
-        builder.Services.AddAuthentication(x =>
+        builder.Services.AddAuthentication(options =>
         {
-            x.DefaultAuthenticateScheme = x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        }).AddJwtBearer(x =>
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(options =>
         {
-            x.TokenValidationParameters = new TokenValidationParameters
+            options.Events = new JwtBearerEvents
+            {
+                OnMessageReceived = context =>
+                {
+                    var token = context.Request.Cookies["access_token"]; 
+                    if (!string.IsNullOrEmpty(token))
+                    {
+                        context.Token = token;
+                    }
+
+                    return Task.CompletedTask;
+                }
+            };
+
+            options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration.JwtKey)),
@@ -79,19 +95,6 @@ public  static class BuilderExtensions
                 ValidateAudience = false
             };
         });
-        builder.Services.AddAuthorization();
-    }
-
-    public static void AddDataContexts(this WebApplicationBuilder builder)
-    {
-        builder
-            .Services
-            .AddDbContext<HotDbContext>(
-                x => { x.UseSqlite(Configuration.SqliteConnectionString); });
-        builder
-            .Services
-            .AddDbContext<ColdDbContext>(
-                x => { x.UseNpgsql(Configuration.SqliteConnectionString); });
     }
 
     public static void AddCrossOrigin(this WebApplicationBuilder builder)
@@ -138,7 +141,7 @@ public  static class BuilderExtensions
         builder.Services.AppServices();
         builder.Services.ConfigureInfraServices();
         builder.Services.AddScoped<ILogTransferService, LogTransferService>();
-        builder.Services.AddScoped<LogTransferJob>(); // agora é seguro, pois será resolvido dentro de um escopo
+        builder.Services.AddScoped<LogTransferJob>(); 
         builder.Services.AddHostedService<LogTransferWorker>();
     }
 }

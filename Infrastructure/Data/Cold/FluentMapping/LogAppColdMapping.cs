@@ -9,7 +9,7 @@ public class LogAppColdMapping : IEntityTypeConfiguration<LogApp>
 {
     public void Configure(EntityTypeBuilder<LogApp> builder)
     {
-        builder.ToTable("LogApps");
+        builder.ToTable("Logs");
 
         builder.HasKey(l => l.Id);
 

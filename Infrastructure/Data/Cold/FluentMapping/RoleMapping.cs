@@ -12,40 +12,43 @@ namespace Infrastructure.Data.FluentMapping
             builder.ToTable("Roles");
             builder.HasKey(r => r.Id);
 
-            // Propriedades
             builder.Property(r => r.Id)
                 .HasColumnName("Id")
-                .HasColumnType("UUID")
+                .HasColumnType("uuid")
                 .ValueGeneratedOnAdd()
                 .IsRequired();
 
             builder.Property(r => r.CreatedDate)
                 .HasColumnName("CreatedDate")
-                .HasColumnType("DateTime")
-                .HasDefaultValueSql("now()");
+                .HasColumnType("timestamp")
+                .HasDefaultValueSql("now()")
+                .IsRequired();
 
             builder.Property(r => r.UpdatedDate)
                 .HasColumnName("UpdatedDate")
-                .HasColumnType("DateTime")
-                .IsRequired()
-                .HasDefaultValueSql("now()");
+                .HasColumnType("timestamp")
+                .HasDefaultValueSql("now()")
+                .IsRequired();
 
             builder.Property(r => r.DeletedDate)
                 .HasColumnName("DeletedDate")
-                .HasColumnType("DateTime")
+                .HasColumnType("timestamp")
                 .IsRequired(false);
 
             builder.OwnsOne(r => r.Name, name =>
             {
                 name.Property(n => n.Name)
                     .HasColumnName("Name")
-                    .HasColumnType("String")
-                    .HasMaxLength(100);
+                    .HasColumnType("varchar")
+                    .HasMaxLength(100)
+                    .IsRequired();
             });
 
             builder.Property(r => r.Slug)
                 .HasColumnName("Slug")
-                .HasColumnType("String");
+                .HasColumnType("varchar")
+                .HasMaxLength(100)
+                .IsRequired();
 
             builder
                 .HasMany(r => r.Users)

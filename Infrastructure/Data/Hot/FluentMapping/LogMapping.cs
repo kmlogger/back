@@ -12,7 +12,7 @@ namespace Infrastructure.Data.Hot.FluentMapping
         public void Configure(EntityTypeBuilder<LogApp> builder)
         {
             // Nome da tabela
-            builder.ToTable("LogApps");
+            builder.ToTable("Logs");
 
             // Chave primária
             builder.HasKey(l => l.Id);

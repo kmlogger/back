@@ -8,59 +8,58 @@ namespace Infrastructure.Data.Cold.FluentMapping
     {
         public void Configure(EntityTypeBuilder<App> builder)
         {
-            // Nome da tabela
             builder.ToTable("Apps");
 
-            // Chave primária
             builder.HasKey(a => a.Id);
 
-            // Propriedades
             builder.Property(a => a.Id)
                 .HasColumnName("Id")
-                .HasColumnType("UUID")
+                .HasColumnType("uuid")
                 .ValueGeneratedOnAdd()
                 .IsRequired();
 
             builder.Property(a => a.CreatedDate)
                 .HasColumnName("CreatedDate")
-                .HasColumnType("DateTime")
-                .HasDefaultValueSql("now()");
+                .HasColumnType("timestamp")
+                .HasDefaultValueSql("now()")
+                .IsRequired();
 
             builder.Property(a => a.UpdatedDate)
                 .HasColumnName("UpdatedDate")
-                .HasColumnType("DateTime")
-                .IsRequired()
-                .HasDefaultValueSql("now()");
+                .HasColumnType("timestamp")
+                .HasDefaultValueSql("now()")
+                .IsRequired();
 
             builder.Property(a => a.DeletedDate)
                 .HasColumnName("DeletedDate")
-                .HasColumnType("DateTime")
+                .HasColumnType("timestamp")
                 .IsRequired(false);
 
             builder.Property(a => a.Environment)
                 .HasColumnName("Environment")
-                .HasColumnType("String");
+                .HasColumnType("varchar")
+                .HasMaxLength(50)
+                .IsRequired();
 
             builder.Property(a => a.Active)
                 .HasColumnName("Active")
-                .HasColumnType("UInt8");
+                .HasColumnType("boolean")
+                .IsRequired();
 
-            // Mapeamento do Value Object UniqueName
             builder.OwnsOne(a => a.Name, name =>
             {
                 name.Property(n => n.Name)
                     .HasColumnName("Name")
-                    .HasColumnType("String")
-                    .HasMaxLength(100);
+                    .HasColumnType("varchar")
+                    .HasMaxLength(100)
+                    .IsRequired();
             });
 
-            // Relacionamento com Category
             builder.HasOne(a => a.Category)
                 .WithMany(c => c.Apps)
                 .HasForeignKey(a => a.CategoryId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Relacionamento com LogEntry
             builder.HasMany(a => a.Logs)
                 .WithOne(l => l.App)
                 .HasForeignKey(l => l.AppId)

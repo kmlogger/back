@@ -13,6 +13,10 @@ using LogRepositoryHot = Infrastructure.Repositories.Hot.LogRepository;
 
 using Infrastructure.Repositories.Cold;
 using Domain.Interfaces.Repositories.Cold;
+using Infrastructure.Data.Cold;
+using Infrastructure.Data.Hot;
+using Microsoft.EntityFrameworkCore;
+using Domain;
 
 namespace Infrastructure.DI;
 
@@ -30,5 +34,16 @@ public static class ServicesExtensions
         services.AddScoped<ICategoryRepository, CategoryRepository>();
         services.AddScoped<IAppRepository, AppRepository>();
         services.AddHttpClient();
+    }
+
+    public static void AddDataContexts(this IServiceCollection services)
+    {
+        services
+            .AddDbContext<HotDbContext>(
+                x => { x.UseSqlite(Configuration.SqliteConnectionString); });
+
+        services
+            .AddDbContext<ColdDbContext>(
+                x => { x.UseNpgsql(StringConnection.BuildConnectionString()); });
     }
 }

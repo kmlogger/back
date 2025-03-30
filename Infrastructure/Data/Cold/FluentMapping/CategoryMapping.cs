@@ -14,27 +14,27 @@ namespace Infrastructure.Data.Cold.FluentMapping
             // Chave primária
             builder.HasKey(c => c.Id);
 
-            // Propriedades
             builder.Property(c => c.Id)
                 .HasColumnName("Id")
-                .HasColumnType("UUID")
+                .HasColumnType("uuid")
                 .ValueGeneratedOnAdd()
                 .IsRequired();
 
             builder.Property(c => c.CreatedDate)
                 .HasColumnName("CreatedDate")
-                .HasColumnType("DateTime")
-                .HasDefaultValueSql("now()");
+                .HasColumnType("timestamp")
+                .HasDefaultValueSql("now()")
+                .IsRequired();
 
             builder.Property(c => c.UpdatedDate)
                 .HasColumnName("UpdatedDate")
-                .HasColumnType("DateTime")
-                .IsRequired()
-                .HasDefaultValueSql("now()");
+                .HasColumnType("timestamp")
+                .HasDefaultValueSql("now()")
+                .IsRequired();
 
             builder.Property(c => c.DeletedDate)
                 .HasColumnName("DeletedDate")
-                .HasColumnType("DateTime")
+                .HasColumnType("timestamp")
                 .IsRequired(false);
 
             // Mapeamento do Value Object UniqueName para Name
@@ -42,15 +42,16 @@ namespace Infrastructure.Data.Cold.FluentMapping
             {
                 name.Property(n => n.Name)
                     .HasColumnName("Name")
-                    .HasColumnType("String")
-                    .HasMaxLength(100);
+                    .HasColumnType("varchar")
+                    .HasMaxLength(100)
+                    .IsRequired();
             });
 
             builder.Property(c => c.Active)
                 .HasColumnName("Active")
-                .HasColumnType("UInt8");
+                .HasColumnType("boolean")
+                .IsRequired();
 
-            // Relacionamento um-para-muitos com App
             builder.HasMany(c => c.Apps)
                 .WithOne(a => a.Category)
                 .HasForeignKey(a => a.CategoryId)

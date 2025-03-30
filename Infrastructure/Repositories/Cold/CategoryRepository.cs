@@ -1,5 +1,4 @@
 using System;
-using Dapper;
 using Domain;
 using Domain.Entities;
 using Domain.Interfaces;

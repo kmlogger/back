@@ -21,10 +21,10 @@ public class ColdDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.Ignore<Notification>();
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(LogAppColdMapping).Assembly);
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(UserMapping).Assembly);
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(RoleMapping).Assembly);
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppMapping).Assembly);
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(CategoryMapping).Assembly);
+        modelBuilder.ApplyConfiguration(new AppMapping());
+        modelBuilder.ApplyConfiguration(new CategoryMapping());
+        modelBuilder.ApplyConfiguration(new UserMapping());
+        modelBuilder.ApplyConfiguration(new RoleMapping());
+        modelBuilder.ApplyConfiguration(new LogAppColdMapping());
     }
 }
