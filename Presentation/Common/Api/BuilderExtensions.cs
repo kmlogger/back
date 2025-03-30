@@ -66,28 +66,12 @@ public  static class BuilderExtensions
 
     public static void AddSecurity(this WebApplicationBuilder builder)
     {
-        builder.Services.AddAuthentication(options =>
+        builder.Services.AddAuthentication(x =>
         {
-            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        })
-        .AddJwtBearer(options =>
+            x.DefaultAuthenticateScheme = x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        }).AddJwtBearer(x =>
         {
-            options.Events = new JwtBearerEvents
-            {
-                OnMessageReceived = context =>
-                {
-                    var token = context.Request.Cookies["access_token"]; 
-                    if (!string.IsNullOrEmpty(token))
-                    {
-                        context.Token = token;
-                    }
-
-                    return Task.CompletedTask;
-                }
-            };
-
-            options.TokenValidationParameters = new TokenValidationParameters
+            x.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration.JwtKey)),
@@ -95,7 +79,9 @@ public  static class BuilderExtensions
                 ValidateAudience = false
             };
         });
+        builder.Services.AddAuthorization();
     }
+
 
     public static void AddCrossOrigin(this WebApplicationBuilder builder)
     {

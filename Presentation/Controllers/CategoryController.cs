@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,6 +11,7 @@ namespace Presentation.Controllers;
 
 [ApiController]
 [Route("category")]
+[Authorize]
 public class CategoryController(IMediator mediator) : ControllerBase
 {
     [HttpPost("create")]

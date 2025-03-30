@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,6 +10,7 @@ namespace Presentation.Controllers;
 
 [ApiController]
 [Route("app")]
+[Authorize]
 public class AppController(IMediator mediator) : ControllerBase
 {
     [HttpPost("create")]

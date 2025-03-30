@@ -20,12 +20,6 @@ namespace Presentation.Controllers;
 [Route("user")]
 public class UserController(IMediator mediator) : ControllerBase
 {
-    [Authorize]
-    [HttpGet("auth/validate")]
-    [ApiKey]
-    public IActionResult Validate()
-        => Ok(new { authenticated = true });
-
     [HttpPost("login")]
     [ApiKey]
     public async Task<IActionResult> Login([FromBody] LoginRequest request, CancellationToken cancellationToken)
